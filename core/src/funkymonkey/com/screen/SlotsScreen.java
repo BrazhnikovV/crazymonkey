@@ -1,16 +1,19 @@
 package funkymonkey.com.screen;
 
+import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import funkymonkey.com.base.ActionListener;
 import funkymonkey.com.base.Base2DScreen;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
+import funkymonkey.com.sprite.Sumbols;
+import funkymonkey.com.spritesList.SumbolsList;
 
 /**
  * SlotsScreen - класс экран сцены слоты (вращение барабанов)
@@ -36,15 +39,33 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
-     *  @var TextureAtlas textureAtlas -
+     *  @var Texture sumbolsTexture - текстура
      */
-    private TextureAtlas textureAtlas;
+    private Texture sumbolsTexture;
+
+    /**
+     *  @access private
+     *  @var int countSumbols -
+     */
+    private int countSumbols = 11;
 
     /**
      *  @access private
      *  @var AssetManager manager -
      */
     private AssetManager manager;
+
+    /**
+     *  @access private
+     *  @var SumbolsList sumbolsList -
+     */
+    private SumbolsList sumbolsList = new SumbolsList();
+
+    /**
+     *  @access private
+     *  @var TweenManager tweenManager -
+     */
+    private static TweenManager tweenManager;
 
     /**
      * SlotsScreen - конструктор
@@ -59,8 +80,21 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
         super.show();
 
         if( manager.isLoaded("mainbackground.jpg" ) ) {
-            this.bgTexture = manager.get("mainbackground.jpg", Texture.class);
+
+            this.bgTexture  = this.manager.get("mainbackground.jpg", Texture.class );
             this.background = new Background( new TextureRegion( this.bgTexture ) );
+        }
+
+        if( this.manager.isLoaded("sumbols-animations.png" ) ) {
+
+            this.sumbolsTexture = this.manager.get("sumbols-animations.png", Texture.class );
+
+            for ( int i = 0; i < this.countSumbols; i++ ) {
+                Sumbols sumbols = new Sumbols( new TextureRegion( this.sumbolsTexture ), 3, 4, this.countSumbols );
+                sumbols.setPosition( -0.4655f + ( 0.233f * (i%4)), 0.265f - ( 0.233f * (i%3)) );
+                sumbols.setFrameNumber( i );
+                this.sumbolsList.addSumbol( sumbols );
+            }
         }
     }
 
@@ -90,6 +124,11 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
         this.batch.begin();
         this.background.draw( this.batch );
+
+        for ( int i = 0; i < this.countSumbols; i++ ) {
+            this.sumbolsList.getSumbol( i ).draw( this.batch );
+        }
+        //this.sumbols.draw( this.batch );
         this.batch.end();
     }
 
@@ -97,11 +136,16 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     public void resize( Rect worldBounds ) {
         System.out.println( "SlotsScreen => resize" );
         this.background.resize( worldBounds );
+        for ( int i = 0; i < this.countSumbols; i++ ) {
+            this.sumbolsList.getSumbol( i ).resize( worldBounds );
+        }
+        //this.sumbols.resize( worldBounds );
     }
 
     @Override
     public void dispose() {
         this.bgTexture.dispose();
+        this.sumbolsTexture.dispose();
         super.dispose();
     }
 
