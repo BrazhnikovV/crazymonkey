@@ -10,9 +10,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		// устанавливаем размеры окна приложения
-		float aspect  = 3f / 4f;
-		config.height = 500;
-		config.width  = (int)( config.height * aspect );
+		config.height = 768;
+		config.width  = 1024;
 
 		// запрещаем изменять размер экрана игры
 		config.resizable = false;

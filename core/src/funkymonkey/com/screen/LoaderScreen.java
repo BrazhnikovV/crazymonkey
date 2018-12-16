@@ -1,6 +1,7 @@
 package funkymonkey.com.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,9 +11,10 @@ import funkymonkey.com.base.ActionListener;
 import funkymonkey.com.base.Base2DScreen;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
+import funkymonkey.com.sprite.LoadBar;
 
 /**
- * MenuScreen - класс для работы с пользовательским меню
+ * LoaderScreen - класс для работы с пользовательским меню
  *
  * @version 1.0.1
  * @package com.mygdx.game.screen
@@ -23,21 +25,52 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
-     *  @var Texture bgTexture - текстура фона игры
+     *  @var Texture bgTexture - текстура фона экрана предзагрузки
      */
     private Texture bgTexture;
 
     /**
      *  @access private
-     *  @var Background background -
+     *  @var Background background - объект фона
      */
     private Background background;
+
+    /**
+     *  @access private
+     *  @var Texture loadBarTexture - текстура прогресса загрузки
+     */
+    private Texture loadBarTexture;
+
+    /**
+     *  @access private
+     *  @var LoadBar loadBar - объект спрайта прогресса загруски
+     */
+    private LoadBar loadBar;
+
+    /**
+     *  @access private
+     *  @var float loadBarWidth - ширина картинки прогресса в float
+     *  для регулировки корректности заполнения поля прогресса
+     */
+    private float loadBarWidth = 0.731f;
 
     /**
      *  @access private
      *  @var TextureAtlas textureAtlas -
      */
     private TextureAtlas textureAtlas;
+
+    /**
+     *  @access private
+     *  @var AssetManager manager -
+     */
+    private AssetManager manager;
+
+    /**
+     *  @access private
+     *  @var boolean isLoaded -
+     */
+    private boolean isLoaded = false;
 
 
     /**
@@ -51,8 +84,26 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
     public void show() {
         super.show();
 
+        this.manager = new AssetManager ();
+        this.manager.load("bonus_background.jpg", Texture.class );
+        this.manager.load("badlogic.jpg", Texture.class );
+        this.manager.load("homework1.png", Texture.class );
+        this.manager.load("a.png", Texture.class );
+        this.manager.load("b.png", Texture.class );
+        this.manager.load("c.png", Texture.class );
+        this.manager.load("d.png", Texture.class );
+
+
+        //if( manager.isLoaded("loadscreen.jpg")) {
+        //    this.bgTexture = manager.get("loadscreen.jpg", Texture.class);
+        //}
+
+        this.loadBarTexture  = new Texture("loadbar.png" );
+        this.loadBar = new LoadBar( new TextureRegion( this.loadBarTexture ) );
+
         this.bgTexture  = new Texture("loadscreen.jpg" );
         this.background = new Background( new TextureRegion( this.bgTexture ) );
+
     }
 
     @Override
@@ -60,6 +111,7 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
         super.render(delta);
 
         this.update(delta);
+
         this.draw();
     }
 
@@ -68,7 +120,17 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
      * @param delta
      */
     public void update( float delta ) {
-
+        if( !this.manager.update() ) {
+            if ( this.loadBarWidth > (float) this.manager.getProgress() ) {
+                this.loadBar.setWidth( (float) this.manager.getProgress() );
+            }
+        }
+        else {
+            if ( !this.isLoaded ) {
+                this.isLoaded = true;
+                this.loadBar.setWidth( this.loadBarWidth );
+            }
+        }
     }
 
     /**
@@ -79,21 +141,24 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
 
         this.batch.begin();
+
         this.background.draw( this.batch );
+        this.loadBar.draw( this.batch );
 
         this.batch.end();
     }
 
     @Override
     public void resize( Rect worldBounds ) {
-        System.out.println( "MenuScreen => resize" );
+        System.out.println( "LoaderScreen => resize" );
+        this.loadBar.resize( worldBounds );
         this.background.resize( worldBounds );
     }
 
     @Override
     public void dispose() {
         this.bgTexture.dispose();
-        this.textureAtlas.dispose();
+        this.loadBarTexture.dispose();
         super.dispose();
     }
 
