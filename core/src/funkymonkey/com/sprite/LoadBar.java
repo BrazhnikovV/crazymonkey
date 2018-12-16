@@ -46,7 +46,6 @@ public class LoadBar extends Sprite {
     @Override
     public void resize( Rect worldBounds ) {
 
-        //System.out.println( "LoadBar => resize" );
         float offsetX = 0.723f;
         float offsetY = 0.102f;
         float height  = 0.0618f;

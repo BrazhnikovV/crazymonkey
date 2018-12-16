@@ -1,6 +1,5 @@
 package funkymonkey.com.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,17 +11,16 @@ import funkymonkey.com.base.ActionListener;
 import funkymonkey.com.base.Base2DScreen;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
-import funkymonkey.com.sprite.LoadBar;
 
 /**
- * LoaderScreen - класс экран предзагрузки игры
+ * SlotsScreen - класс экран сцены слоты (вращение барабанов)
  *
  * @version 1.0.1
  * @package com.mygdx.game.screen
  * @author  Vasya Brazhnikov
  * @copyright Copyright (c) 2018, Vasya Brazhnikov
  */
-public class LoaderScreen extends Base2DScreen implements ActionListener {
+public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
@@ -38,25 +36,6 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
-     *  @var Texture loadBarTexture - текстура прогресса загрузки
-     */
-    private Texture loadBarTexture;
-
-    /**
-     *  @access private
-     *  @var LoadBar loadBar - объект спрайта прогресса загруски
-     */
-    private LoadBar loadBar;
-
-    /**
-     *  @access private
-     *  @var float loadBarWidth - ширина картинки прогресса в float
-     *  для регулировки корректности заполнения поля прогресса
-     */
-    private float loadBarWidth = 0.731f;
-
-    /**
-     *  @access private
      *  @var TextureAtlas textureAtlas -
      */
     private TextureAtlas textureAtlas;
@@ -68,45 +47,21 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
     private AssetManager manager;
 
     /**
-     *  @access private
-     *  @var boolean isLoaded -
+     * SlotsScreen - конструктор
      */
-    private boolean isLoaded = false;
-
-    /**
-     *  @access private
-     *  @var Game game -
-     */
-    private Game game;
-
-
-    /**
-     * LoaderScreen - конструктор
-     */
-    public LoaderScreen( Game game ) {
+    public SlotsScreen( AssetManager manager ) {
         super();
-        this.game = game;
+        this.manager = manager;
     }
 
     @Override
     public void show() {
         super.show();
 
-        this.manager = new AssetManager ();
-        this.manager.load("mainbackground.jpg", Texture.class );
-        this.manager.load("bonus_background.jpg", Texture.class );
-        this.manager.load("badlogic.jpg", Texture.class );
-
-        //if( manager.isLoaded("loadscreen.jpg")) {
-        //    this.bgTexture = manager.get("loadscreen.jpg", Texture.class);
-        //}
-
-        this.loadBarTexture  = new Texture("loadbar.png" );
-        this.loadBar = new LoadBar( new TextureRegion( this.loadBarTexture ) );
-
-        this.bgTexture  = new Texture("loadscreen.jpg" );
-        this.background = new Background( new TextureRegion( this.bgTexture ) );
-
+        if( manager.isLoaded("mainbackground.jpg" ) ) {
+            this.bgTexture = manager.get("mainbackground.jpg", Texture.class);
+            this.background = new Background( new TextureRegion( this.bgTexture ) );
+        }
     }
 
     @Override
@@ -123,18 +78,7 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
      * @param delta
      */
     public void update( float delta ) {
-        if( !this.manager.update() ) {
-            if ( this.loadBarWidth > (float) this.manager.getProgress() ) {
-                this.loadBar.setWidth( (float) this.manager.getProgress() );
-            }
-        }
-        else {
-            if ( !this.isLoaded ) {
-                this.isLoaded = true;
-                this.loadBar.setWidth( this.loadBarWidth );
-                this.game.setScreen( new SlotsScreen( this.manager ) );
-            }
-        }
+
     }
 
     /**
@@ -145,29 +89,25 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
 
         this.batch.begin();
-
         this.background.draw( this.batch );
-        this.loadBar.draw( this.batch );
-
         this.batch.end();
     }
 
     @Override
     public void resize( Rect worldBounds ) {
-        System.out.println( "LoaderScreen => resize" );
-        this.loadBar.resize( worldBounds );
+        System.out.println( "SlotsScreen => resize" );
         this.background.resize( worldBounds );
     }
 
     @Override
     public void dispose() {
         this.bgTexture.dispose();
-        this.loadBarTexture.dispose();
         super.dispose();
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer ) {
+
         return false;
     }
 
