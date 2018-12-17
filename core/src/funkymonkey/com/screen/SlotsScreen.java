@@ -3,6 +3,7 @@ package funkymonkey.com.screen;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
+import aurelienribon.tweenengine.equations.Linear;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
@@ -68,7 +69,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     private float w,h;
     private long startTime;
-    private long delta;
+    private float delta;
 
     /**
      *  @access private
@@ -116,10 +117,13 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             Tween.registerAccessor( Sprite.class, new SpriteTween() );
             this.tweenManager = new TweenManager();
 
-            Tween.to( this.circle, SpriteTween.POSITION_X,150f )
-                .target( this.w - 0.5f )
+            Tween.to( this.circle, SpriteTween.POSITION_X,1f )
+                .target( -0.5f )
                 .ease( TweenEquations.easeOutElastic )
+                .repeat( 10, 0f )
                 .start( this.tweenManager );
+
+            //Tween.to( this.circle, SpriteTween.POSITION_X, 1.0f).target(20, 30).ease(TweenEquations.easeNone);
 
             this.startTime = TimeUtils.millis();
         }
@@ -151,7 +155,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
      * @param delta
      */
     public void update( float delta ) {
-
+        this.delta = delta;
     }
 
     /**
@@ -164,7 +168,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
         this.batch.begin();
         this.background.draw( this.batch );
 
-        this.delta = ( TimeUtils.millis() - this.startTime ) / 1000;
+        //this.delta = ( TimeUtils.millis() - this.startTime ) / 1000;
         this.tweenManager.update( this.delta );
 
         for ( int i = 0; i < this.countSymbols; i++ ) {
