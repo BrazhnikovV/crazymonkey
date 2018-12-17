@@ -1,4 +1,4 @@
-sumbols-animations.png
+symbols-animations.png
 size: 628, 471
 format: RGBA8888
 filter: Linear,Linear
