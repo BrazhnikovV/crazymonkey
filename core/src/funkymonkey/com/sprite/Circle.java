@@ -1,7 +1,9 @@
 package funkymonkey.com.sprite;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import funkymonkey.com.base.Sprite;
+//import funkymonkey.com.base.Sprite;
+
 import funkymonkey.com.math.Rect;
 
 /**
@@ -18,7 +20,7 @@ public class Circle extends Sprite {
      * Constructor
      * @param region
      */
-    public Circle(TextureRegion region ) {
+    public Circle( TextureRegion region ) {
         super( region );
     }
 
@@ -29,14 +31,7 @@ public class Circle extends Sprite {
      * @param cols   - количество колонок
      * @param frames - количество кадров
      */
-    public Circle(TextureRegion region, int rows, int cols, int frames ) {
-        super( region, rows, cols, frames );
-    }
-
-
-    @Override
-    public void resize( Rect worldBounds ) {
-        setHeightProportion( 0.01f );
-        pos.set( worldBounds.pos );
+    public Circle( TextureRegion region, int rows, int cols, int frames ) {
+        super( region );
     }
 }

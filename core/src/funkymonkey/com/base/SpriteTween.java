@@ -36,7 +36,7 @@ public class SpriteTween implements TweenAccessor<Sprite> { //** Tweening a Spri
 
         switch ( tweenType ) {
             case POSITION_X:
-                target.setX(newValues[0]);
+                target.setX( newValues[0] );
             break;
             default:
                 assert false;

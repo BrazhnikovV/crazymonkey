@@ -3,12 +3,12 @@ package funkymonkey.com.screen;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
-import aurelienribon.tweenengine.equations.Linear;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import funkymonkey.com.base.ActionListener;
@@ -16,10 +16,10 @@ import funkymonkey.com.base.Base2DScreen;
 import funkymonkey.com.base.SpriteTween;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
-import funkymonkey.com.sprite.Circle;
-import funkymonkey.com.sprite.Symbols;
-import funkymonkey.com.spritesList.SymbolsList;
-import com.badlogic.gdx.utils.TimeUtils;
+import funkymonkey.com.sprite.Symbol;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SlotsScreen - класс экран сцены слоты (вращение барабанов)
@@ -45,30 +45,20 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
-     *  @var Texture symbolsTexture - текстура
+     *  @var List<TextureAtlas> symbolTextures - лист текстур
      */
-    private Texture symbolsTexture;
+    private TextureAtlas symbolTextures = new TextureAtlas();
+
+    /**
+     *  @access protected
+     *  @var List<Sprite> symbols - лист
+     */
+    private List<Sprite> symbols = new ArrayList<Sprite>();
 
     /**
      *  @access private
-     *  @var int countSymbols -
+     *  @var float delta - текстура
      */
-    private int countSymbols = 11;
-
-    /**
-     *  @access private
-     *  @var Texture circleTexture - текстура
-     */
-    private Texture circleTexture;
-
-    /**
-     *  @access private
-     *  @var Sprite circle -
-     */
-    private Sprite circle;
-
-    private float w,h;
-    private long startTime;
     private float delta;
 
     /**
@@ -77,11 +67,6 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
      */
     private AssetManager manager;
 
-    /**
-     *  @access private
-     *  @var SymbolsList symbolsList -
-     */
-    private SymbolsList symbolsList = new SymbolsList();
 
     /**
      *  @access private
@@ -107,37 +92,21 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             this.background = new Background( new TextureRegion( this.bgTexture ) );
         }
 
-        if( this.manager.isLoaded("circle.png" ) ) {
+        if( this.manager.isLoaded("symbols-animations.tpack" ) ) {
 
-            this.circleTexture  = this.manager.get("circle.png", Texture.class );
-            //this.circle = new Circle( new TextureRegion( this.circleTexture ) );
-            this.circle = new Sprite( this.circleTexture );
-            this.circle.setSize( 0.1f, 0.1f );
+            this.symbolTextures =  new TextureAtlas("symbols-animations.tpack" );
+            for ( int i = 0; i < 15; i++ ) {
+                this.symbols.add( new Symbol( this.symbolTextures, i ) );
+            }
 
             Tween.registerAccessor( Sprite.class, new SpriteTween() );
             this.tweenManager = new TweenManager();
 
-            Tween.to( this.circle, SpriteTween.POSITION_X,1f )
-                .target( -0.5f )
-                .ease( TweenEquations.easeOutElastic )
-                .repeat( 10, 0f )
-                .start( this.tweenManager );
-
-            //Tween.to( this.circle, SpriteTween.POSITION_X, 1.0f).target(20, 30).ease(TweenEquations.easeNone);
-
-            this.startTime = TimeUtils.millis();
-        }
-
-        if( this.manager.isLoaded("symbols-animations.png" ) ) {
-
-            this.symbolsTexture = this.manager.get("symbols-animations.png", Texture.class );
-
-            for ( int i = 0; i < this.countSymbols; i++ ) {
-                Symbols symbols = new Symbols( new TextureRegion( this.symbolsTexture ), 3, 4, this.countSymbols );
-                symbols.setPosition( -0.4655f + ( 0.233f * (i%4)), 0.265f - ( 0.233f * (i%3)) );
-                symbols.setFrameNumber( i );
-                this.symbolsList.addSymbol( symbols );
-            }
+            Tween.to( this.symbols.get( 0 ), SpriteTween.POSITION_X,1f )
+                    .target( -0.5f )
+                    .ease( TweenEquations.easeOutElastic )
+                    .repeat( 10, 0f )
+                    .start( this.tweenManager );
         }
     }
 
@@ -168,13 +137,12 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
         this.batch.begin();
         this.background.draw( this.batch );
 
-        //this.delta = ( TimeUtils.millis() - this.startTime ) / 1000;
+        for ( Sprite item: this.symbols ) {
+            item.draw( this.batch );
+        }
+
         this.tweenManager.update( this.delta );
 
-        for ( int i = 0; i < this.countSymbols; i++ ) {
-            this.symbolsList.getSymbol( i ).draw( this.batch );
-        }
-        this.circle.draw( this.batch );
 
         this.batch.end();
     }
@@ -183,17 +151,15 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     public void resize( Rect worldBounds ) {
         System.out.println( "SlotsScreen => resize" );
         this.background.resize( worldBounds );
-        for ( int i = 0; i < this.countSymbols; i++ ) {
-            this.symbolsList.getSymbol( i ).resize( worldBounds );
-        }
-        //this.symbols.resize( worldBounds );
+        //for ( Sprite item: this.symbols ) {
+        //    item.resize( worldBounds );
+        //}
     }
 
     @Override
     public void dispose() {
         this.bgTexture.dispose();
-        this.symbolsTexture.dispose();
-        this.circleTexture.dispose();
+        this.symbolTextures.dispose();
         super.dispose();
     }
 
@@ -225,3 +191,20 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
         super.hide();
     }
 }
+
+            /*
+            this.circleTexture  = this.manager.get("circle.png", Texture.class );
+            this.circle = new Circle( new TextureRegion( this.circleTexture ) );
+            //this.circle = new Sprite( this.circleTexture );
+            this.circle.setSize( 0.1f, 0.1f );
+            //  this.circle.
+
+            Tween.registerAccessor( Sprite.class, new SpriteTween() );
+            this.tweenManager = new TweenManager();
+
+            Tween.to( this.circle, SpriteTween.POSITION_X,1f )
+                .target( -0.5f )
+                .ease( TweenEquations.easeOutElastic )
+                .repeat( 10, 0f )
+                .start( this.tweenManager );
+            */

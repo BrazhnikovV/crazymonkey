@@ -51,6 +51,7 @@ public class Sprite extends Rect {
      * @param region
      */
     public Sprite ( TextureRegion region ) {
+
         if ( region == null ) {
             throw new NullPointerException( "regions is null" );
         }
