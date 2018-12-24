@@ -45,6 +45,12 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
+     *  @var Background backgroundUp - объект фона
+     */
+    private Background backgroundUp;
+
+    /**
+     *  @access private
      *  @var List<TextureAtlas> symbolTextures - лист текстур
      */
     private TextureAtlas symbolTextures = new TextureAtlas();
@@ -92,6 +98,12 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             this.background = new Background( new TextureRegion( this.bgTexture ) );
         }
 
+        if( this.manager.isLoaded("mainbackground.png" ) ) {
+
+            this.bgTexture  = this.manager.get("mainbackground.png", Texture.class );
+            this.backgroundUp = new Background( new TextureRegion( this.bgTexture ) );
+        }
+
         if( this.manager.isLoaded("symbols-animations.tpack" ) ) {
 
             this.symbolTextures =  new TextureAtlas("symbols-animations.tpack" );
@@ -102,11 +114,14 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             Tween.registerAccessor( Sprite.class, new SpriteTween() );
             this.tweenManager = new TweenManager();
 
-            Tween.to( this.symbols.get( 0 ), SpriteTween.POSITION_X,1f )
-                    .target( -0.5f )
-                    .ease( TweenEquations.easeOutElastic )
+            for ( Sprite sprite: this.symbols ) {
+                Tween.to( sprite, SpriteTween.POSITION_Y,1f )
+                    .target( -0.7f + sprite.getY() )
+                    .ease( TweenEquations.easeNone )
                     .repeat( 10, 0f )
                     .start( this.tweenManager );
+            }
+
         }
     }
 
@@ -141,6 +156,8 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             item.draw( this.batch );
         }
 
+        this.backgroundUp.draw( this.batch );
+
         this.tweenManager.update( this.delta );
 
 
@@ -151,6 +168,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     public void resize( Rect worldBounds ) {
         System.out.println( "SlotsScreen => resize" );
         this.background.resize( worldBounds );
+        this.backgroundUp.resize( worldBounds );
         //for ( Sprite item: this.symbols ) {
         //    item.resize( worldBounds );
         //}

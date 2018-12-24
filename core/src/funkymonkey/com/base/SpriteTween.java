@@ -19,13 +19,24 @@ public class SpriteTween implements TweenAccessor<Sprite> { //** Tweening a Spri
      */
     public static final int POSITION_X = 1;
 
+    /**
+     *  @access public
+     *  @var int POSITION_Y -
+     */
+    public static final int POSITION_Y = 2;
+
     @Override
     public int getValues( Sprite target, int tweenType, float[] returnValues ) {
 
         switch( tweenType ) {
             case POSITION_X:
                 // один случай для каждого объекта - возвращается один, так как изменяется только 1 значение
-                returnValues[0] = target.getX(); return 1;
+                returnValues[0] = target.getX();
+                return 1;
+            case POSITION_Y:
+                // один случай для каждого объекта - возвращается один, так как изменяется только 1 значение
+                returnValues[0] = target.getY();
+                return 1;
             default:
                 assert false; return -1;
         }
@@ -37,6 +48,9 @@ public class SpriteTween implements TweenAccessor<Sprite> { //** Tweening a Spri
         switch ( tweenType ) {
             case POSITION_X:
                 target.setX( newValues[0] );
+            break;
+            case POSITION_Y:
+                target.setY( newValues[0] );
             break;
             default:
                 assert false;

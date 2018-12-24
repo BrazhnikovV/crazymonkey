@@ -93,6 +93,7 @@ public class LoaderScreen extends Base2DScreen implements ActionListener {
         super.show();
 
         this.manager = new AssetManager ();
+        this.manager.load("mainbackground.png", Texture.class );
         this.manager.load("mainbackground.jpg", Texture.class );
         this.manager.load("bonus_background.jpg", Texture.class );
         this.manager.load("badlogic.jpg", Texture.class );

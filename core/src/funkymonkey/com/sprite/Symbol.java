@@ -24,13 +24,13 @@ public class Symbol extends Sprite {
      *  @access private
      *  @var float startX -
      */
-    private float startX = -0.4655f;
+    private float startX = -0.5655f;
 
     /**
      *  @access private
      *  @var float startY -
      */
-    private float startY = 0.268f;
+    private float startY = 0.168f;
 
     /**
      *  @access private
@@ -59,6 +59,8 @@ public class Symbol extends Sprite {
         this.cellNumber = cellNumber;
         this.resize();
     }
+
+
 
     private void resize() {
         float height = 0.2f;
