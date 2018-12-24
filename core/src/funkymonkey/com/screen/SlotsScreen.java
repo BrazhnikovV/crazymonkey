@@ -1,25 +1,17 @@
 package funkymonkey.com.screen;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenEquations;
-import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import funkymonkey.com.base.ActionListener;
 import funkymonkey.com.base.Base2DScreen;
-import funkymonkey.com.base.SpriteTween;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
 import funkymonkey.com.sprite.Symbol;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * SlotsScreen - класс экран сцены слоты (вращение барабанов)
@@ -51,34 +43,15 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
-     *  @var List<TextureAtlas> symbolTextures - лист текстур
-     */
-    private TextureAtlas symbolTextures = new TextureAtlas();
-
-    /**
-     *  @access protected
-     *  @var List<Sprite> symbols - лист
-     */
-    private List<Sprite> symbols = new ArrayList<Sprite>();
-
-    /**
-     *  @access private
-     *  @var float delta - текстура
-     */
-    private float delta;
-
-    /**
-     *  @access private
      *  @var AssetManager manager -
      */
     private AssetManager manager;
 
-
     /**
-     *  @access private
-     *  @var TweenManager tweenManager -
+     *  @access protected
+     *  @var Sprite symbols
      */
-    private static TweenManager tweenManager;
+    private Symbol symbols;
 
     /**
      * SlotsScreen - конструктор
@@ -104,25 +77,8 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             this.backgroundUp = new Background( new TextureRegion( this.bgTexture ) );
         }
 
-        if( this.manager.isLoaded("symbols-animations.tpack" ) ) {
-
-            this.symbolTextures =  new TextureAtlas("symbols-animations.tpack" );
-            for ( int i = 0; i < 15; i++ ) {
-                this.symbols.add( new Symbol( this.symbolTextures, i ) );
-            }
-
-            Tween.registerAccessor( Sprite.class, new SpriteTween() );
-            this.tweenManager = new TweenManager();
-
-            for ( Sprite sprite: this.symbols ) {
-                Tween.to( sprite, SpriteTween.POSITION_Y,1f )
-                    .target( -0.7f + sprite.getY() )
-                    .ease( TweenEquations.easeNone )
-                    .repeat( 10, 0f )
-                    .start( this.tweenManager );
-            }
-
-        }
+        Symbol symbol = new Symbol( this.manager );
+        this.symbols  = symbol.getSymbols();
     }
 
     @Override
@@ -139,7 +95,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
      * @param delta
      */
     public void update( float delta ) {
-        this.delta = delta;
+        this.symbols.update( delta );
     }
 
     /**
@@ -151,15 +107,8 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
         this.batch.begin();
         this.background.draw( this.batch );
-
-        for ( Sprite item: this.symbols ) {
-            item.draw( this.batch );
-        }
-
+        this.symbols.draw( this.batch );
         this.backgroundUp.draw( this.batch );
-
-        this.tweenManager.update( this.delta );
-
 
         this.batch.end();
     }
@@ -177,13 +126,13 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     @Override
     public void dispose() {
         this.bgTexture.dispose();
-        this.symbolTextures.dispose();
+        this.symbols.dispose();
         super.dispose();
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer ) {
-
+        this.symbols.startTwisting();
         return false;
     }
 

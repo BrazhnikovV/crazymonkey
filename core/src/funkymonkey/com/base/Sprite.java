@@ -80,12 +80,12 @@ public class Sprite extends Rect {
      */
     public void draw( SpriteBatch batch ) {
         batch.draw(
-                this.regions[this.frame],       // текущий регион
-                getLeft(), getBottom(),         // точка отрисовки
-                this.halfWidth, this.halfHeight,// точка вращения
-                getWidth(), getHeight(),        // ширина и высота
-                this.scale, this.scale,         // масштаб по x и y
-                this.angel                      // угол вращения
+            this.regions[this.frame],       // текущий регион
+            getLeft(), getBottom(),         // точка отрисовки
+            this.halfWidth, this.halfHeight,// точка вращения
+            getWidth(), getHeight(),        // ширина и высота
+            this.scale, this.scale,         // масштаб по x и y
+            this.angel                      // угол вращения
         );
     }
 
