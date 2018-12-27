@@ -30,13 +30,13 @@ public class Symbols extends Sprite {
     private TextureAtlas symbolTextures = new TextureAtlas();
 
     /**
-     *  @access protected
+     *  @access private
      *  @var List<Sprite> symbols - лист символов барабана
      */
     private List<Sprite> symbols;
 
     /**
-     *  @access protected
+     *  @access private
      *  @var Map<String, ArrayList>> - карта листов символов барабана
      */
     private Map<String, List<Sprite>> hashMap = new HashMap<String, List<Sprite>>();
