@@ -85,6 +85,7 @@ public class Symbols extends Sprite {
 
     /**
      * Symbols - конструктор
+     * @param manager - менеджер загрузки ресурсов
      */
     public Symbols( AssetManager manager ) {
         this.manager = manager;
@@ -92,7 +93,8 @@ public class Symbols extends Sprite {
 
     /**
      * Symbols - конструктор
-     * @param atlas
+     * @param atlas - атлас текстур
+     * @param cellNumber - номер элемента в листе спрайтов символов
      */
     private Symbols ( TextureAtlas atlas, int cellNumber, int i ) {
         super( atlas.findRegion("symbol_animation-" + Rnd.nextInt( 0, 10 ) ) );
