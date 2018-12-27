@@ -4,14 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import funkymonkey.com.base.ActionListener;
 import funkymonkey.com.base.Base2DScreen;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
-import funkymonkey.com.sprite.Symbol;
+import funkymonkey.com.sprite.Symbols;
 
 /**
  * SlotsScreen - класс экран сцены слоты (вращение барабанов)
@@ -37,21 +36,22 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     /**
      *  @access private
-     *  @var Background backgroundUp - объект фона
+     *  @var Background backgroundUp - объект фона накладываемый поверх
+     *  основного и поверх символов барабана
      */
     private Background backgroundUp;
 
     /**
      *  @access private
-     *  @var AssetManager manager -
+     *  @var AssetManager manager - менеджер загрузки рессурсов
      */
     private AssetManager manager;
 
     /**
      *  @access protected
-     *  @var Sprite symbols
+     *  @var Sprite symbols - класс делегат символы для барабанов
      */
-    private Symbol symbols;
+    private Symbols symbols;
 
     /**
      * SlotsScreen - конструктор
@@ -77,7 +77,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             this.backgroundUp = new Background( new TextureRegion( this.bgTexture ) );
         }
 
-        Symbol symbol = new Symbol( this.manager );
+        Symbols symbol = new Symbols( this.manager );
         this.symbols  = symbol.getSymbols();
     }
 
@@ -91,8 +91,9 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     }
 
     /**
-     * update -
-     * @param delta
+     * update - вспомогательная функция
+     * для выполнения дополнительных рассчетов
+     * @param delta - дельта
      */
     public void update( float delta ) {
         this.symbols.update( delta );
@@ -115,12 +116,10 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
 
     @Override
     public void resize( Rect worldBounds ) {
+
         System.out.println( "SlotsScreen => resize" );
         this.background.resize( worldBounds );
         this.backgroundUp.resize( worldBounds );
-        //for ( Sprite item: this.symbols ) {
-        //    item.resize( worldBounds );
-        //}
     }
 
     @Override
@@ -158,20 +157,3 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
         super.hide();
     }
 }
-
-            /*
-            this.circleTexture  = this.manager.get("circle.png", Texture.class );
-            this.circle = new Circle( new TextureRegion( this.circleTexture ) );
-            //this.circle = new Sprite( this.circleTexture );
-            this.circle.setSize( 0.1f, 0.1f );
-            //  this.circle.
-
-            Tween.registerAccessor( Sprite.class, new SpriteTween() );
-            this.tweenManager = new TweenManager();
-
-            Tween.to( this.circle, SpriteTween.POSITION_X,1f )
-                .target( -0.5f )
-                .ease( TweenEquations.easeOutElastic )
-                .repeat( 10, 0f )
-                .start( this.tweenManager );
-            */

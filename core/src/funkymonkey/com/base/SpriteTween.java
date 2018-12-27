@@ -4,7 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import aurelienribon.tweenengine.TweenAccessor;
 
 /**
- * SpriteTween -
+ * SpriteTween - вспомогательный класс который необходимо
+ * реализовать для выполнения Tween анимации
  *
  * @version 1.0.1
  * @package funkymonkey.com.base
@@ -15,13 +16,13 @@ public class SpriteTween implements TweenAccessor<Sprite> { //** Tweening a Spri
 
     /**
      *  @access public
-     *  @var final int - there will one int declaration per object
+     *  @var int POSITION_X - первая декларация объекта анимации
      */
     public static final int POSITION_X = 1;
 
     /**
      *  @access public
-     *  @var int POSITION_Y -
+     *  @var int POSITION_Y - вторая декларация объекта анимации
      */
     public static final int POSITION_Y = 2;
 
