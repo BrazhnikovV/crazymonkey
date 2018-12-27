@@ -25,7 +25,7 @@ public class Symbols extends Sprite {
 
     /**
      *  @access private
-     *  @var List<TextureAtlas> symbolTextures - текстура символов
+     *  @var TextureAtlas symbolTextures - текстура символов
      */
     private TextureAtlas symbolTextures = new TextureAtlas();
 
