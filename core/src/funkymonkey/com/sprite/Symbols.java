@@ -5,7 +5,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import funkymonkey.com.base.Config;
 import funkymonkey.com.base.SpriteTween;
 import funkymonkey.com.math.Rnd;
 
@@ -37,7 +36,7 @@ public class Symbols extends Sprite {
      *  @access private
      *  @var Map<String, ArrayList>> - карта листов символов барабана
      */
-    private Map<String, List<Sprite>> hashMap = new HashMap<String, List<Sprite>>();
+    private Map<String, List<Sprite>> hashMap;
 
     /**
      *  @access private
@@ -59,9 +58,27 @@ public class Symbols extends Sprite {
 
     /**
      *  @access private
-     *  @var Config config -
+     *  @var float startX -
      */
-    private Config config = new Config();
+    private float startX = -0.5655f;
+
+    /**
+     *  @access private
+     *  @var float startY -
+     */
+    private float startY = -0.291f;
+
+    /**
+     *  @access private
+     *  @var float offsetX -
+     */
+    private float offsetX = 0.233f;
+
+    /**
+     *  @access private
+     *  @var float offsetY -
+     */
+    private float offsetY = 0.231f;
 
     /**
      * Symbols - конструктор
@@ -102,41 +119,30 @@ public class Symbols extends Sprite {
      * addSymbols - добавить символы
      */
     private void addSymbols () {
-        if( this.manager.isLoaded("symbols-animations.tpack" ) ) {
 
-            this.symbolTextures = new TextureAtlas("symbols-animations.tpack" );
+        this.symbolTextures = new TextureAtlas("symbols-animations.tpack" );
 
-            for ( int i = 0; i < 5; i++ ) {
+        this.hashMap = new HashMap<String, List<Sprite>>();
+        for ( int i = 0; i < 5; i++ ) {
 
-                this.symbols = new ArrayList<Sprite>();
-                for ( int j = 0; j < 300; j++ ) {
-                    this.symbols.add( new Symbols( this.symbolTextures, j, i ) );
-                }
+            this.symbols = new ArrayList<Sprite>();
+            for ( int j = 0; j < 21; j++ ) {
 
-                this.hashMap.put( "coll-" + i, this.symbols );
+                this.symbols.add( new Symbols( this.symbolTextures, j, i ) );
             }
+
+            this.hashMap.put( "coll-" + i, this.symbols );
         }
     }
-
-    private boolean removeSymbols () {
-
-        for ( Map.Entry<String, List<Sprite>> entry : this.hashMap.entrySet() ){
-            for ( Sprite sprite: entry.getValue() ) {
-                if ( sprite.getY() >= this.config.getSymbCnf( "startY" ) ) {
-                    this.symbols.remove( sprite );
-                }
-            }
-        }
-
-        return true;
-    }
-
 
     /**
      * startTwisting - начать процесс вращения
      */
     public void startTwisting () {
 
+        System.out.println( "this.symbols.size() = " + this.symbols.size() );
+
+        this.addSymbols();
         Tween.registerAccessor( Sprite.class, new SpriteTween() );
 
         float[] durations = { 1.0f, 1.1f, 1.2f, 1.3f, 1.4f };
@@ -146,8 +152,6 @@ public class Symbols extends Sprite {
                 this.startTween( sprite, durations[i] );
             }
         }
-
-        //this.removeSymbols();
     }
 
     /**
@@ -157,25 +161,16 @@ public class Symbols extends Sprite {
      */
     public void startTween ( final Sprite sprite, float duration ) {
 
-        Timeline t1 = Timeline.createSequence()
+        Timeline timeline = Timeline.createSequence()
             .beginSequence()
             .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
-                .target( - ( this.config.getSymbCnf( "offsetX" ) * 18 ) + sprite.getY() )
+                .target( - ( this.offsetX * 18 ) + sprite.getY() )
                 .ease( TweenEquations.easeNone ) )
             .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
-                .target( - ( this.config.getSymbCnf( "offsetY" ) * 15 ) + sprite.getY() )
+                .target( - ( this.offsetY * 18 ) + ( sprite.getY() ) )
                 .ease( TweenEquations.easeOutElastic ) )
             .end()
             .start( this.tweenManager );
-
-        /*
-        t1.setCallback( new TweenCallback() {
-            @Override
-            public void onEvent(int type, BaseTween<?> source) {
-                //System.out.println(source.getUserData());
-            }
-        });
-        */
     }
 
     /**
@@ -187,7 +182,12 @@ public class Symbols extends Sprite {
 
             for ( Iterator<Sprite> iter = entry.getValue().iterator(); iter.hasNext(); ) {
                 Sprite sprite = iter.next();
-                sprite.draw( batch );
+                if ( ( sprite.getY() + this.offsetY ) <= this.startY ) {
+                    iter.remove();
+                }
+                else {
+                    sprite.draw( batch );
+                }
             }
         }
     }
@@ -211,8 +211,8 @@ public class Symbols extends Sprite {
 
         this.setSize(height * aspect , height );
         this.setPosition(
-            this.config.getSymbCnf( "startX" ) + ( this.config.getSymbCnf( "offsetX" ) * i ),
-            this.config.getSymbCnf( "startY" ) + ( this.config.getSymbCnf( "offsetY" ) * this.cellNumber )
+            this.startX + ( this.offsetX* i ),
+            this.startY + ( this.offsetY * this.cellNumber )
         );
     }
 }
