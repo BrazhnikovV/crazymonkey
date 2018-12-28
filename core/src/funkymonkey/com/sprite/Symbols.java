@@ -30,7 +30,7 @@ public class Symbols extends Sprite {
      *  @access private
      *  @var List<Sprite> symbols - лист символов барабана
      */
-    private List<Sprite> symbols;
+    private List<Sprite> symbols = new ArrayList<Sprite>();
 
     /**
      *  @access private
@@ -81,6 +81,12 @@ public class Symbols extends Sprite {
     private float offsetY = 0.231f;
 
     /**
+     *  @access private
+     *  @var List<Timeline> -
+     */
+    private List<Timeline> timelines;
+
+    /**
      * Symbols - конструктор
      * @param manager - менеджер загрузки ресурсов
      */
@@ -120,6 +126,10 @@ public class Symbols extends Sprite {
      */
     private void addSymbols () {
 
+        if ( this.symbols.size() == 21 ) {
+            return;
+        }
+
         this.symbolTextures = new TextureAtlas("symbols-animations.tpack" );
 
         this.hashMap = new HashMap<String, List<Sprite>>();
@@ -145,6 +155,8 @@ public class Symbols extends Sprite {
         this.addSymbols();
         Tween.registerAccessor( Sprite.class, new SpriteTween() );
 
+        this.timelines = new ArrayList<Timeline>();
+
         float[] durations = { 1.0f, 1.1f, 1.2f, 1.3f, 1.4f };
 
         for ( int i = 0; i < durations.length; i++ ){
@@ -161,16 +173,25 @@ public class Symbols extends Sprite {
      */
     public void startTween ( final Sprite sprite, float duration ) {
 
-        Timeline timeline = Timeline.createSequence()
+        this.timelines.add( Timeline.createSequence()
             .beginSequence()
-            .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
-                .target( - ( this.offsetX * 18 ) + sprite.getY() )
-                .ease( TweenEquations.easeNone ) )
-            .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
-                .target( - ( this.offsetY * 18 ) + ( sprite.getY() ) )
-                .ease( TweenEquations.easeOutElastic ) )
+                .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
+                    .target( - ( this.offsetX * 18 ) + sprite.getY() )
+                    .ease( TweenEquations.easeNone ) )
+                .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
+                    .target( - ( this.offsetY * 18 ) + ( sprite.getY() ) )
+                    .ease( TweenEquations.easeOutElastic ) )
             .end()
-            .start( this.tweenManager );
+            .start( this.tweenManager ) );
+    }
+
+    /**
+     * stopAnimate - остановка анимации вращения символов
+     */
+    public void stopAnimate ( ) {
+        for ( Timeline timeline : this.timelines ) {
+            timeline.update( 0.8f );
+        }
     }
 
     /**
