@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import funkymonkey.com.base.SpriteTween;
+import funkymonkey.com.decorator.SpriteSymbolsDecorator;
 import funkymonkey.com.math.Rnd;
 
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.*;
  * @author  Vasya Brazhnikov
  * @copyright Copyright (c) 2018, Vasya Brazhnikov
  */
-public class Symbols extends Sprite {
+public class Symbols extends SpriteSymbolsDecorator {
 
     /**
      *  @access private
@@ -30,13 +31,13 @@ public class Symbols extends Sprite {
      *  @access private
      *  @var List<Sprite> symbols - лист символов барабана
      */
-    private List<Sprite> symbols = new ArrayList<Sprite>();
+    private List<SpriteSymbolsDecorator> symbols = new ArrayList<SpriteSymbolsDecorator>();
 
     /**
      *  @access private
      *  @var Map<String, ArrayList>> - карта листов символов барабана
      */
-    private Map<String, List<Sprite>> hashMap;
+    private Map<String, List<SpriteSymbolsDecorator>> hashMap;
 
     /**
      *  @access private
@@ -100,8 +101,8 @@ public class Symbols extends Sprite {
      * @param atlas - атлас текстур
      * @param cellNumber - номер элемента в листе спрайтов символов
      */
-    private Symbols ( TextureAtlas atlas, int cellNumber, int i ) {
-        super( atlas.findRegion("symbol_animation-" + Rnd.nextInt( 0, 10 ) ) );
+    private Symbols ( TextureAtlas atlas, int symbolNumber, int i, int cellNumber ) {
+        super( atlas.findRegion("symbol_animation-" + symbolNumber ), symbolNumber, cellNumber );
         this.cellNumber = cellNumber;
         this.resize( i );
     }
@@ -132,13 +133,13 @@ public class Symbols extends Sprite {
 
         this.symbolTextures = new TextureAtlas("symbols-animations.tpack" );
 
-        this.hashMap = new HashMap<String, List<Sprite>>();
+        this.hashMap = new HashMap<String, List<SpriteSymbolsDecorator>>();
         for ( int i = 0; i < 5; i++ ) {
 
-            this.symbols = new ArrayList<Sprite>();
+            this.symbols = new ArrayList<SpriteSymbolsDecorator>();
             for ( int j = 0; j < 21; j++ ) {
 
-                this.symbols.add( new Symbols( this.symbolTextures, j, i ) );
+                this.symbols.add( new Symbols( this.symbolTextures, Rnd.nextInt( 0, 10 ), i, j ) );
             }
 
             this.hashMap.put( "coll-" + i, this.symbols );
@@ -150,8 +151,6 @@ public class Symbols extends Sprite {
      */
     public void startTwisting () {
 
-        System.out.println( "this.symbols.size() = " + this.symbols.size() );
-
         this.addSymbols();
         Tween.registerAccessor( Sprite.class, new SpriteTween() );
 
@@ -159,8 +158,9 @@ public class Symbols extends Sprite {
 
         float[] durations = { 1.0f, 1.1f, 1.2f, 1.3f, 1.4f };
 
+        this.enableBlurSymbols();
         for ( int i = 0; i < durations.length; i++ ){
-            for ( Sprite sprite: this.hashMap.get( "coll-" + i ) ) {
+            for ( SpriteSymbolsDecorator sprite: this.hashMap.get( "coll-" + i ) ) {
                 this.startTween( sprite, durations[i] );
             }
         }
@@ -171,19 +171,29 @@ public class Symbols extends Sprite {
      * @param sprite   - анимируемый спрайт
      * @param duration - время анимации
      */
-    public void startTween ( final Sprite sprite, float duration ) {
+    public void startTween ( final SpriteSymbolsDecorator sprite, float duration ) {
 
         this.timelines.add( Timeline.createSequence()
             .beginSequence()
                 .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
                     .target( - ( this.offsetX * 18 ) + sprite.getY() )
                     .ease( TweenEquations.easeNone ) )
+                    .setCallbackTriggers( 1 )
                 .push( Tween.to( sprite, SpriteTween.POSITION_Y, duration )
                     .target( - ( this.offsetY * 18 ) + ( sprite.getY() ) )
                     .ease( TweenEquations.easeOutElastic ) )
+                    .setCallback(new TweenCallback() {
+                        @Override
+                        public void onEvent(int type, BaseTween<?> source) {
+                            if ( sprite.id > 17 ) {
+                                sprite.setAlpha( 1.0f );
+                            }
+                        }
+                    })
             .end()
             .start( this.tweenManager ) );
     }
+
 
     /**
      * stopAnimate - остановка анимации вращения символов
@@ -194,14 +204,22 @@ public class Symbols extends Sprite {
         }
     }
 
+    private void enableBlurSymbols () {
+        for ( Map.Entry<String, List<SpriteSymbolsDecorator>> entry : this.hashMap.entrySet() ) {
+            for ( SpriteSymbolsDecorator sprite : entry.getValue() ) {
+                sprite.setAlpha( 0.6f );
+            }
+        }
+    }
+
     /**
      * draw - метод для вызова в классе сцены
      * @param batch
      */
     public void draw ( SpriteBatch batch ) {
-        for ( Map.Entry<String, List<Sprite>> entry : this.hashMap.entrySet() ) {
+        for ( Map.Entry<String, List<SpriteSymbolsDecorator>> entry : this.hashMap.entrySet() ) {
 
-            for ( Iterator<Sprite> iter = entry.getValue().iterator(); iter.hasNext(); ) {
+            for ( Iterator<SpriteSymbolsDecorator> iter = entry.getValue().iterator(); iter.hasNext(); ) {
                 Sprite sprite = iter.next();
                 if ( ( sprite.getY() + this.offsetY ) <= this.startY ) {
                     iter.remove();

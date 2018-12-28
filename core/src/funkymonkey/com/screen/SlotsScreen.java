@@ -138,7 +138,6 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     @Override
     public boolean keyDown( int keycode ) {
         if ( keycode == 44 ) {
-            System.out.println("ddd");
             this.symbols.stopAnimate();
         }
         return false;
