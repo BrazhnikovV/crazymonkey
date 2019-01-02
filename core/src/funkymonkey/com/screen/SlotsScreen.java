@@ -10,6 +10,7 @@ import funkymonkey.com.base.ActionListener;
 import funkymonkey.com.base.Base2DScreen;
 import funkymonkey.com.math.Rect;
 import funkymonkey.com.sprite.Background;
+import funkymonkey.com.sprite.LineNumbers;
 import funkymonkey.com.sprite.Symbols;
 
 /**
@@ -54,6 +55,12 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     private Symbols symbols;
 
     /**
+     *  @access protected
+     *  @var LineNumbers lineNumbers - класс делегат номера линий
+     */
+    private LineNumbers lineNumbers;
+
+    /**
      * SlotsScreen - конструктор
      */
     public SlotsScreen( AssetManager manager ) {
@@ -77,8 +84,11 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
             this.backgroundUp = new Background( new TextureRegion( this.bgTexture ) );
         }
 
-        Symbols symbol = new Symbols( this.manager );
-        this.symbols  = symbol.getSymbols();
+        LineNumbers lineNumbers = new LineNumbers( this.manager );
+        this.lineNumbers = lineNumbers.getNumbers();
+
+        Symbols symbol = new Symbols( this.manager, this.lineNumbers );
+        this.symbols   = symbol.getSymbols();
     }
 
     @Override
@@ -110,6 +120,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
         this.background.draw( this.batch );
         this.symbols.draw( this.batch );
         this.backgroundUp.draw( this.batch );
+        this.lineNumbers.draw( this.batch );
 
         this.batch.end();
     }
@@ -126,6 +137,7 @@ public class SlotsScreen extends Base2DScreen implements ActionListener {
     public void dispose() {
         this.bgTexture.dispose();
         this.symbols.dispose();
+        this.lineNumbers.dispose();
         super.dispose();
     }
 

@@ -5,11 +5,12 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.Timer;
 import funkymonkey.com.base.SpriteTween;
 import funkymonkey.com.decorator.SpriteSymbolsDecorator;
 import funkymonkey.com.math.Rnd;
-
 import java.util.*;
+
 
 /**
  * Symbols - класс символы для барабана
@@ -43,19 +44,19 @@ public class Symbols extends SpriteSymbolsDecorator {
      *  @access private
      *  @var TweenManager tweenManager - менеджер Tween анимации
      */
-    private TweenManager tweenManager = new TweenManager();;
+    private TweenManager tweenManager = new TweenManager();
+
+    /**
+     *  @access private
+     *  @var TweenManager tweenManager - менеджер Tween анимации
+     */
+    private static LineNumbers lineNumbers;
 
     /**
      *  @access private
      *  @var int symbolNum - номер элемента символа в листе для вычисления позиции
      */
     private int cellNumber;
-
-    /**
-     *  @access private
-     *  @var AssetManager manager - менеджер загрузки ресурсов
-     */
-    private AssetManager manager;
 
     /**
      *  @access private
@@ -91,8 +92,9 @@ public class Symbols extends SpriteSymbolsDecorator {
      * Symbols - конструктор
      * @param manager - менеджер загрузки ресурсов
      */
-    public Symbols( AssetManager manager ) {
+    public Symbols( AssetManager manager, LineNumbers lineNumbers ) {
         this.manager = manager;
+        this.lineNumbers = lineNumbers;
         this.addSymbols();
     }
 
@@ -122,6 +124,7 @@ public class Symbols extends SpriteSymbolsDecorator {
     public Symbols getSymbols () {
         return this;
     }
+
     /**
      * addSymbols - добавить символы
      */
@@ -155,6 +158,7 @@ public class Symbols extends SpriteSymbolsDecorator {
         Tween.registerAccessor( Sprite.class, new SpriteTween() );
 
         this.timelines = new ArrayList<Timeline>();
+        lineNumbers.hideAllNumber();
 
         float[] durations = { 1.0f, 1.1f, 1.2f, 1.3f, 1.4f };
 
@@ -164,6 +168,8 @@ public class Symbols extends SpriteSymbolsDecorator {
                 this.startTween( sprite, durations[i] );
             }
         }
+
+        this.stopAnimateByTimer();
     }
 
     /**
@@ -194,21 +200,12 @@ public class Symbols extends SpriteSymbolsDecorator {
             .start( this.tweenManager ) );
     }
 
-
     /**
      * stopAnimate - остановка анимации вращения символов
      */
     public void stopAnimate ( ) {
         for ( Timeline timeline : this.timelines ) {
             timeline.update( 0.8f );
-        }
-    }
-
-    private void enableBlurSymbols () {
-        for ( Map.Entry<String, List<SpriteSymbolsDecorator>> entry : this.hashMap.entrySet() ) {
-            for ( SpriteSymbolsDecorator sprite : entry.getValue() ) {
-                sprite.setAlpha( 0.6f );
-            }
         }
     }
 
@@ -236,6 +233,31 @@ public class Symbols extends SpriteSymbolsDecorator {
      */
     public void dispose () {
         this.symbolTextures.dispose();
+    }
+
+    /**
+     * stopAnimateByTimer - отслеживает окончание анимации
+     * вращания символов барабана по таймеру
+     */
+    private void stopAnimateByTimer () {
+
+        float delay = 1.28f; // seconds
+
+        Timer.schedule(new Timer.Task(){
+            @Override
+            public void run() {
+                System.out.println( "Stop symbol animation" );
+                lineNumbers.showAllNumber();
+            }
+        }, delay);
+    }
+
+    private void enableBlurSymbols () {
+        for ( Map.Entry<String, List<SpriteSymbolsDecorator>> entry : this.hashMap.entrySet() ) {
+            for ( SpriteSymbolsDecorator sprite : entry.getValue() ) {
+                sprite.setAlpha( 0.6f );
+            }
+        }
     }
 
     /**

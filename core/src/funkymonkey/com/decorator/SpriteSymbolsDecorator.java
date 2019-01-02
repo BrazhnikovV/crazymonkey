@@ -1,5 +1,6 @@
 package funkymonkey.com.decorator;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -25,11 +26,36 @@ public class SpriteSymbolsDecorator extends  Sprite {
      */
     public int symbolNumber = 0;
 
+    /**
+     *  @access private
+     *  @var AssetManager manager - менеджер загрузки ресурсов
+     */
+    protected AssetManager manager;
+
+    /**
+     * SpriteSymbolsDecorator - конструктор
+     */
     public SpriteSymbolsDecorator() {
 
     }
 
-    public SpriteSymbolsDecorator( TextureRegion region, int symbolNumber, int id ) {
+    /**
+     * SpriteSymbolsDecorator - конструктор
+     * @param region - регионы текстуры
+     * @param symbolNumber - номер символа
+     */
+    public SpriteSymbolsDecorator ( TextureRegion region, int symbolNumber ) {
+        super(region);
+        this.symbolNumber = symbolNumber;
+    }
+
+    /**
+     * SpriteSymbolsDecorator - конструктор
+     * @param region - регионы текстуры
+     * @param symbolNumber - номер символа
+     * @param id - идентификатор символа
+     */
+    public SpriteSymbolsDecorator ( TextureRegion region, int symbolNumber, int id ) {
         super(region);
         this.id = id;
         this.symbolNumber = symbolNumber;
